@@ -6,7 +6,7 @@ Utility to retry a command until succeed.
 ```
 usage: retry.py [-h] [--max_attempts MAX_ATTEMPTS]
                 [--timeout_seconds TIMEOUT_SECONDS]
-                command
+                -- command
 
 positional arguments:
   command               The command to be retried.
@@ -21,6 +21,6 @@ optional arguments:
 
 ## Examples
 ```
-./retry.py --max_attempts=10 'false'
-./retry.py --max_attempts=10 --timeout_seconds 5 'sleep 10'
+./retry.py --max_attempts=10 -- false
+./retry.py --max_attempts=10 --timeout_seconds=5 -- sleep 10
 ```
