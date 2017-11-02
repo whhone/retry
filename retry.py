@@ -9,27 +9,29 @@ import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument("command", help="The command to be retried.")
-parser.add_argument("--max_attempts", help="The maximum number of attempts before giving up.")
-parser.add_argument("--timeout_seconds", help="Timeout for each run in second.")
+parser.add_argument("--max_attempts", help="The maximum number of attempts before giving up.",
+                    type=int, default=1024)
+parser.add_argument("--timeout_seconds", help="Timeout for each run in second.",
+                    type=int, default=None)
 
 args = parser.parse_args()
 
-max_attempts = int(args.max_attempts)
-timeout_seconds = int(args.timeout_seconds)
 command = args.command.split(' ')
-
 print("Running commands: %s" % ' '.join(command))
-print("Timeout:          %d seconds" % timeout_seconds)
-print("Max attempt:      %d times" % max_attempts)
+print("Max attempt:      %d times" % args.max_attempts)
+if args.timeout_seconds:
+    print("Timeout:          %d seconds" % args.timeout_seconds)
+
 print("")
 
 attempt = 1
-
-while attempt < max_attempts:
+while attempt < args.max_attempts:
     print("========== Attempt %d Start ==========" % attempt)
+    print("Running: " + ' '.join(command))
+    print("STDOUT: ")
     completed_process = subprocess.run(
         args=command,
-        timeout=timeout_seconds,
+        timeout=args.timeout_seconds,
     )
     print("========== Attempt %d Finished ==========" % attempt)
     print("Return code: %d" % completed_process.returncode)
