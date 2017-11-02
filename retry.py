@@ -41,6 +41,6 @@ while attempt < args.max_attempts:
 
     if completed_process.returncode != 0:
         attempt += 1
-        time.sleep(args.delay_seconds)
+        time.sleep(args.interval_seconds)
     else:
         break
