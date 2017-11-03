@@ -4,8 +4,8 @@
 # https://docs.python.org/3/library/subprocess.html
 
 import argparse
-import subprocess
-import time
+
+from retryer import Retryer
 
 parser = argparse.ArgumentParser()
 parser.add_argument("command", help="The command to be retried.",
@@ -18,29 +18,24 @@ parser.add_argument("--interval_seconds", help="The interval, in second, after a
                     type=int, default=1)
 args = parser.parse_args()
 
-print("Running commands:  %s" % ' '.join(args.command))
-print("Max # of attempts: %d times" % args.max_attempts)
-print("Failed interval:   %d seconds" % args.interval_seconds)
-if args.timeout_seconds:
-    print("Timeout:           %d seconds" % args.timeout_seconds)
 
-print("")
+def main():
+    print("Running commands:  %s" % ' '.join(args.command))
+    print("Max # of attempts: %d times" % args.max_attempts)
+    print("Failed interval:   %d seconds" % args.interval_seconds)
+    if args.timeout_seconds:
+        print("Timeout:           %d seconds" % args.timeout_seconds)
 
-attempt = 1
-while attempt < args.max_attempts:
-    print("========== Attempt %d Start ==========" % attempt)
-    print("Running: " + ' '.join(args.command))
-    print("STDOUT: ")
-    completed_process = subprocess.run(
-        args=args.command,
-        timeout=args.timeout_seconds,
-    )
-    print("========== Attempt %d Finished ==========" % attempt)
-    print("Return code: %d" % completed_process.returncode)
     print("")
 
-    if completed_process.returncode != 0:
-        attempt += 1
-        time.sleep(args.interval_seconds)
-    else:
-        break
+    retryer = Retryer(
+        command=args.command,
+        max_attempts=args.max_attempts,
+        interval_seconds=args.interval_seconds,
+        timeout_seconds=args.timeout_seconds)
+
+    retryer.start()
+
+
+if __name__ == "__main__":
+    exit(main())
